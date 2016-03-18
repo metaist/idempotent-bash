@@ -10,7 +10,7 @@
 #   2: quiet
 #   *: items to install
 ib-pip-install() {
-  local label=${1:-''}
+  local label=${1:-'[pip] pip install'}
   local quiet=${2:-''}
   shift 2
   local skip
@@ -39,6 +39,6 @@ ${1:-''}"
   for item in $items; do
     pattern="^$item"
     skip=$(grep -i "$pattern" <<< "$existing")
-    ib-action -l "$label" -s "$skip" $quiet -- pip install $item
+    ib-action -l "$label $item" -s "$skip" $quiet -- pip install $item
   done
 }
