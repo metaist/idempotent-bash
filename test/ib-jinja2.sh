@@ -1,8 +1,3 @@
-#!/usr/bin/env bash
-
-# Copyright 2016 Metaist LLC
-# MIT License
-
 source "../src/$(basename ${BASH_SOURCE[0]})"
 
 TEST_TMPL='/tmp/ib-test.tmpl'
