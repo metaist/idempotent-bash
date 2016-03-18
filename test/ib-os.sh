@@ -33,7 +33,7 @@ test-ib-os-remove-dir() {
 
 test-ib-os-chmod() {
   touch "$TEST_FILE"
-  ib-assert-eq "$(stat --printf='%a' $TEST_FILE)" "664"
+  ib-assert-eq "$(stat --printf='%a' $TEST_FILE)" "644"
   ib os-chmod -q "$TEST_FILE" 777
   ib-assert-eq "$(stat --printf='%a' $TEST_FILE)" "777"
 }
