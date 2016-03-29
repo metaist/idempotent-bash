@@ -18,7 +18,7 @@ ib-apt-add-key() {
   local keyid=${3:-''}
   local url=${4:-''}
   local label=${1:-'[apt] apt-get add $keyid from $url'}
-  local skip=$(ib-ok? $(apt-key list | grep "$keyid"))
+  local skip=$(ib-ok? $(apt-key list | grep -qPe "$keyid"))
   ib-action -l "$label" -s "$skip" $quiet -- wget --quiet -O - $url \| apt-key add -
 }
 
