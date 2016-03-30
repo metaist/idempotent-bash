@@ -39,7 +39,15 @@ ib-changed?() { $IB_CHANGED; }
 # Args:
 #   *: command to execute
 ib-ok?() {
-  eval "$@" && echo "true" || echo "false"
+  eval "$@" > /dev/null && echo "true" || echo "false"
+}
+
+# Is this non-empty or truthy?
+# Args:
+#   1: item (str, boolean)
+ib-truthy?() {
+  local item=${1:-""}
+  [[ "$item" != "" && "$item" != false ]]
 }
 
 # Is this empty or falsy?
