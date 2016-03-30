@@ -13,8 +13,7 @@ test-ib-apt-add-key() {
 
 test-ib-apt-update() {
   ib apt-update -q
-  local value=$?
-  ib-assert-true [[ $value == 0 ]]
+  ib-assert-true [[ "$?" == "0" ]]
 }
 
 test-ib-apt-install() {
