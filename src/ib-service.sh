@@ -7,6 +7,8 @@
 #   2: quiet
 #   3: name
 ib-service-install() {
+  if ib-command? update-rc.d; then true; else return 1; fi
+
   local label=${1:-''}
   local quiet=${2:-''}
   local name=${3:-''}
@@ -21,6 +23,8 @@ ib-service-install() {
 #   3: name
 #   4: state
 ib-service-state() {
+  if ib-command? service; then true; else return 1; fi
+
   local label=${1:-"[service] service $3 $4"}
   local quiet=${2:-''}
   local name=${3:-''}
@@ -32,7 +36,7 @@ ib-service-state() {
 
   if ib-falsy? "$quiet"; then ib-action-start "$label"; fi
 
-  service postgresql status 2&>/dev/null
+  service $name status 2&>/dev/null
   status=$?
   case "$state" in
     start) skip=$(ib-ok? [[ $status == 0 ]]);;
