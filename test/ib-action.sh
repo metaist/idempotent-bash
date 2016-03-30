@@ -25,6 +25,11 @@ test-ib-falsy() {
   ib-assert-false $(ib-ok? ib-falsy? "something")
 }
 
+test-ib-command() {
+  ib-assert-true $(ib-ok? ib-command? "wget")
+  ib-assert-false $(ib-ok? ib-command? "fake" "")
+}
+
 test-ib-join() {
   ib-assert-eq $(ib-join "" "a" "b" "c") "abc"
   ib-assert-eq $(ib-join "+" "a" "b" "c") "a+b+c"

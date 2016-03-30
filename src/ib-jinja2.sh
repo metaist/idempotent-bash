@@ -13,6 +13,8 @@
 #   5: dest
 #   *: flags to jinja2
 ib-jinja2() {
+  if ib-command? jinja2; then true; else return 1; fi
+
   local label=${1:-''}
   local quiet=${2:-''}
   local src=${3:-''}
