@@ -45,6 +45,9 @@ This project was inspired by [Ansible] and [Bash Booster]. I liked the idea of i
 
 I haven't used [Puppet] or [Chef], but those seem popular right now.
 
+## License
+Licensed under the MIT License.
+
 [Ansible]: https://www.ansible.com/
 [Bash Booster]: http://www.bashbooster.net/
 [Bash]: https://www.gnu.org/software/bash/
