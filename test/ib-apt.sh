@@ -14,6 +14,8 @@ test-ib-apt-add-key() {
 }
 
 test-ib-apt-update() {
+  if ib-command? apt-get; then true; else return 1; fi
+
   ib apt-update -q
   ib-assert-true [[ "$?" == "0" ]]
 }
