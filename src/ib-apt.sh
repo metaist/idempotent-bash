@@ -36,11 +36,15 @@ ib-apt-update() {
   local label=${1:-'[apt] apt-get update'}
   local quiet=${2:-''}
   local age_max=${3:-""}
-  local age_now=$(( $(date '+%s') - $(stat -c '%Z' "$IB_APT_CACHE_PATH") ))
+  local age_now=$(date '+%s')
   local status=
   local skip=
   local tried=false
   local value=0
+
+  if [[ -e "$IB_APT_CACHE_PATH" ]]; then
+    age_now=$(( age_now - $(stat -c '%Z' "$IB_APT_CACHE_PATH") ))
+  fi
 
   if ib-falsy? "$quiet"; then ib-action-start "$label"; fi
   if [[ "$age_max" > 0 ]]; then
