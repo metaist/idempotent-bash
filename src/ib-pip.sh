@@ -10,6 +10,8 @@
 #   2: quiet
 #   *: items to install
 ib-pip-install() {
+  if ib-command? pip; then true; else return 1; fi
+
   local label=${1:-'[pip] pip install'}
   local quiet=${2:-''}
   shift 2

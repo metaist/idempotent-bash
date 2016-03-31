@@ -5,6 +5,8 @@
 # Args:
 #   1: sql (str)
 ib-postgresql-ok?() {
+  if ib-command? psql; then true; else return 1; fi
+
   local sql=${1:-"SELECT 1;"}
   local status=$(sudo -u postgres psql -c "$sql" 2>&1)
   grep -qPe "\([^0]\d* rows?\)" <<< "$status"
@@ -17,6 +19,8 @@ ib-postgresql-ok?() {
 #   3: sql test (str)
 #   4: sql file (str)
 ib-postgresql-file() {
+  if ib-command? psql; then true; else return 1; fi
+
   local label=${1:-''}
   local quiet=${2:-''}
   local sql=${3:-''}

@@ -9,7 +9,7 @@ IFS=$'\n\t'
 
 # script information
 IB_SCRIPT_NAME=${0:-""}
-IB_SCRIPT_VERSION="1.0.0"
+IB_SCRIPT_VERSION="1.1.0"
 
 # terminal colors
 if [[ $(command -v tput) ]]; then
@@ -39,15 +39,39 @@ ib-changed?() { $IB_CHANGED; }
 # Args:
 #   *: command to execute
 ib-ok?() {
-  eval "$@" && echo "true" || echo "false"
+  eval "$@" > /dev/null && echo "true" || echo "false"
+}
+
+# Is this non-empty or truthy?
+# Args:
+#   1: item (str, boolean)
+ib-truthy?() {
+  local item=${1:-''}
+  [[ "$item" != "" && "$item" != false ]]
 }
 
 # Is this empty or falsy?
 # Args:
 #   1: item (str, boolean)
 ib-falsy?() {
-  local item=${1:-""}
+  local item=${1:-''}
   [[ "$item" == "" || "$item" == false ]]
+}
+
+# Is this command valid?
+# Args:
+#   1: item (str)
+#   2: warning (str)
+ib-command?() {
+  local item=${1:-''}
+  local warning=${2:-"WARNING: $item not installed"}
+  if ib-falsy? $(command -v $item); then
+    if ib-truthy? $warning; then
+      echo "$warning" |& tee -a $IB_LOG
+    fi
+    return 1
+  fi
+  return 0
 }
 
 # Join an array with a separator.

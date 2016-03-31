@@ -5,6 +5,8 @@ setup() { true; }
 teardown() { true; }
 
 test-ib-apt-add-key() {
+  if ib-command? apt-key; then true; else return 1; fi
+
   local keyid=ACCC4CF8
   local url=https://www.postgresql.org/media/keys/ACCC4CF8.asc
   ib apt-add-key -q "$keyid" "$url"
@@ -12,12 +14,15 @@ test-ib-apt-add-key() {
 }
 
 test-ib-apt-update() {
+  if ib-command? apt-get; then true; else return 1; fi
+
   ib apt-update -q
-  local value=$?
-  ib-assert-true [[ $value == 0 ]]
+  ib-assert-true [[ "$?" == "0" ]]
 }
 
 test-ib-apt-install() {
+  if ib-command? dpkg; then true; else return 1; fi
+
   ib apt-install -q python
   ib-assert-true $(dpkg -s python | grep -qPe installed)
 }
