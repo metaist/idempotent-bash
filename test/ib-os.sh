@@ -54,9 +54,24 @@ test-ib-os-copy() {
 test-ib-os-link() {
   local TEST_DIR_2="${TEST_DIR}-link"
   ib-assert-false [[ -e "$TEST_DIR_2" ]]
+  mkdir "$TEST_DIR"
   ib os-link -q "$TEST_DIR" "$TEST_DIR_2"
   ib-assert-true [[ -L "$TEST_DIR_2" ]]
   ib-assert-eq "$(readlink -f $TEST_DIR)" "$(readlink -f $TEST_DIR_2)"
+  rm -rf "$TEST_DIR_2"
+}
+
+test-ib-os-copy-link() {
+  local TEST_DIR_2="${TEST_DIR}-link"
+  ib-assert-false [[ -e "$TEST_DIR_2" ]]
+  mkdir "$TEST_DIR"
+  ib os-copy-link -q "$TEST_DIR" "$TEST_DIR_2"
+  ib-assert-true [[ -L "$TEST_DIR_2" ]]
+  ib-assert-eq "$(readlink -f $TEST_DIR)" "$(readlink -f $TEST_DIR_2)"
+  rm -rf "$TEST_DIR_2"
+
+  ib os-copy-link -q "$TEST_DIR" "$TEST_DIR_2" "copy"
+  ib-assert-true [[ -d "$TEST_DIR_2" ]]
   rm -rf "$TEST_DIR_2"
 }
 

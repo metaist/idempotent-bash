@@ -115,6 +115,26 @@ ib-os-link() {
   ib-action -l "$label" -s "$skip" $quiet -- ln -s $flags "$src" "$dest"
 }
 
+# Copy or link (default) depending on a parameter.
+# Args:
+#   1: label
+#   2: quiet
+#   3: src
+#   4: dest
+#   5: toggle
+ib-os-copy-link() {
+  local label=${1:-''}
+  local quiet=${2:-''}
+  local src=${3:-''}
+  local dest=${4:-''}
+  local toggle=${5:-''}
+  if ib-truthy? $toggle; then
+    ib-os-copy "$label" "$quiet" "$src" "$dest"
+  else
+    ib-os-link "$label" "$quiet" "$src" "$dest"
+  fi
+}
+
 # Add content to a file, if pattern is not present.
 # Args:
 #   1: label
