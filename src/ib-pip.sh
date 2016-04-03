@@ -16,9 +16,9 @@ ib-pip-install() {
   local quiet=${2:-''}
   shift 2
   local skip
-  local item
-  local items
-  local pattern
+  local item=''
+  local items=''
+  local pattern=''
   local existing=$(pip freeze 2>> $IB_LOG)
 
   while [ "$#" -gt 0 ]; do
