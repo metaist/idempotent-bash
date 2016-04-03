@@ -39,6 +39,8 @@ ${1:-''}"
 
   items=$(sort -u <<< "$items")
   for item in $items; do
+    if [[ "" == "$item" || "''" == "$item" ]]; then continue; fi
+
     pattern="^$item"
     skip=$(grep -i "$pattern" <<< "$existing")
     ib-action -l "$label $item" -s "$skip" $quiet -- pip install $item

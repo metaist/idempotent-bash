@@ -1,4 +1,6 @@
-source "../src/$(basename ${BASH_SOURCE[0]})"
+if [[ -z "${IB_SCRIPT_VERSION:-''}" ]]; then
+  source "../src/$(basename ${BASH_SOURCE[0]})"
+fi # only included if needed
 
 setup() { true; }
 
@@ -27,7 +29,7 @@ test-ib-falsy() {
 
 test-ib-command() {
   ib-assert-true $(ib-ok? ib-command? "wget")
-  ib-assert-false $(ib-ok? ib-command? "fake" "")
+  ib-assert-false $(ib-ok? ib-command? "fake" "false")
 }
 
 test-ib-join() {
@@ -40,4 +42,8 @@ test-ib-action() {
   local TEST_LINE='example line of text'
   ib-action -q -- echo $TEST_LINE
   ib-assert-eq "$IB_LAST_ACTION" "echo $TEST_LINE"
+
+  IB_LAST_ACTION=''
+  ib-action -q --dry-run -- echo $TEST_LINE
+  ib-assert-eq "$IB_LAST_ACTION" ""
 }
