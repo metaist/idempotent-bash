@@ -21,7 +21,7 @@ ib-apt-add-key() {
   local keyid=${3:-''}
   local url=${4:-''}
   local label=${1:-"[apt] apt-key add $keyid from $url"}
-  local skip=$(ib-ok? apt-key list \| grep -qPe "$keyid")
+  local skip=$(ib-ok? apt-key list \| grep -qsPe "$keyid")
   ib-action -l "$label" -s "$skip" $quiet -- wget --quiet -O - $url \| apt-key add -
 }
 
@@ -56,7 +56,7 @@ ib-apt-update() {
     echo -e "\n\$ apt-get update" >> $IB_LOG
     status=$(apt-get update 2>&1)
     echo "$status" >> $IB_LOG
-    echo "$status" | grep -q '^[WE]:'
+    echo "$status" | grep -qsPe '^[WE]:'
     value="$(( ! $? ))"
   fi
   if ib-falsy? "$quiet"; then ib-action-stop "$label" "$tried" "$value"; fi
@@ -81,7 +81,7 @@ ib-apt-install() {
 
   ib-apt-update "" "$quiet" "$IB_APT_CACHE_MAX"
   for item in "$@"; do
-    skip=$(dpkg -s $item 2>> /dev/null | grep '^Status.\+installed')
+    skip=$(ib-ok? dpkg -s $item 2>> /dev/null \| grep -qsPe '^Status.\+installed')
     ib-action -l "$label $item" -s "$skip" $quiet -- apt-get install -y $item
   done
 }

@@ -9,7 +9,7 @@ ib-postgresql-ok?() {
 
   local sql=${1:-"SELECT 1;"}
   local status=$(sudo -u postgres psql -c "$sql" 2>&1)
-  grep -qPe "\([^0]\d* rows?\)" <<< "$status"
+  grep -qsPe "\([^0]\d* rows?\)" <<< "$status"
 }
 
 # Run a SQL script.
