@@ -81,7 +81,7 @@ ib-apt-install() {
 
   ib-apt-update "" "$quiet" "$IB_APT_CACHE_MAX"
   for item in "$@"; do
-    skip=$(ib-ok? dpkg -s $item 2>> /dev/null \| grep -qsPe '^Status.\+installed')
+    skip=$(ib-ok? dpkg -s $item 2>> /dev/null \| grep -sPe \"^Status.+installed\")
     ib-action -l "$label $item" -s "$skip" $quiet -- apt-get install -y $item
   done
 }
