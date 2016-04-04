@@ -42,7 +42,7 @@ ${1:-''}"
     if [[ "" == "$item" || "''" == "$item" ]]; then continue; fi
 
     pattern="^$item"
-    skip=$(ib-ok? grep -iqsPe "$pattern" <<< "$existing")
+    skip=$(ib-ok? grep -iqsPe \"$pattern\" <<< "$existing")
     ib-action -l "$label $item" -s "$skip" $quiet -- pip install $item
   done
 }

@@ -16,7 +16,7 @@ ib-apt-cyg-install() {
   local skip
 
   for item in "$@"; do
-    skip=$(ib-ok? apt-cyg list \| grep -qsPe "^$item\$")
+    skip=$(ib-ok? apt-cyg list \| grep -qsPe \"^$item\$\")
     ib-action -l "$label $item" -s "$skip" $quiet -- apt-cyg install "$item"
   done
 }
