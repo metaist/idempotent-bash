@@ -79,4 +79,10 @@ test-ib-os-append() {
   local TEST_LINE="this is a test line"
   ib os-append -q "$TEST_FILE" "$TEST_LINE"
   ib-assert-eq "$(<$TEST_FILE)" "$TEST_LINE"
+  rm -rf "$TEST_FILE"
+
+  TEST_LINE="line 1
+line 2"
+  ib os-append -q "$TEST_FILE" "$TEST_LINE"
+  ib-assert-eq "$(<$TEST_FILE)" "$TEST_LINE"
 }
