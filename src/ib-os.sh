@@ -135,7 +135,7 @@ ib-os-copy-link() {
   fi
 }
 
-# Add content to a file, if pattern is not present.
+# Add a single line to a file.
 # Args:
 #   1: label
 #   2: quiet
@@ -146,8 +146,9 @@ ib-os-append() {
   local label=${1:-''}
   local quiet=${2:-''}
   local dest=${3:-''}
-  local line=${4:-''}
-  local pattern=${5:-"^$line\$"}
+  shift 3
+  local pattern="^${1:-''}\$"
+  local line=$@
   local skip=$(ib-ok? grep -qsPe \"$pattern\" "$dest")
 
   label=${label:-"[os] append to $dest"}
