@@ -19,7 +19,7 @@ if [[ $EUID != 0 ]]; then
     echo "Re-run this script with root privileges."
     exit 1
   else
-    exec sudo "PATH=$PATH" -H $IB_TEST_SCRIPT_NAME --try-root $IB_TEST_SCRIPT_ARGS
+    exec sudo -E $IB_TEST_SCRIPT_NAME --try-root $IB_TEST_SCRIPT_ARGS
     exit 0
   fi
 fi # user has root
