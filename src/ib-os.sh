@@ -148,7 +148,7 @@ ib-os-append() {
   local dest=${3:-''}
   local line=${4:-''}
   local pattern=${5:-"^$line\$"}
-  local skip=$(ib-ok? grep -qsPe "$pattern" "$dest")
+  local skip=$(ib-ok? grep -qsPe \"$pattern\" "$dest")
 
   label=${label:-"[os] append to $dest"}
   ib-action -l "$label" -s "$skip" $quiet -- tee --append "$dest" <<< "$line"
