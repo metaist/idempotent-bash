@@ -108,7 +108,7 @@ ib-os-link() {
 
   if [[ (-L "$dest" || -e "$dest") && "$target" != "$src" ]]; then
     echo "wrong target: $target != $src" &>> $IB_LOG
-    ib-os-remove "" "$quiet" "$dest"
+    ib-action -l "" -s "false" $quiet -- rm -rf $flags "$dest"
   fi  # remove incorrect target
 
   skip=$(ib-ok? [[ -L "$dest" ]] && [[ "$target" == "$src" ]] )
