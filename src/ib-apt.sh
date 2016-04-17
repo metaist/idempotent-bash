@@ -7,38 +7,54 @@ IB_APT_CACHE_PATH="/var/cache/apt/pkgcache.bin"
 # maximum age of apt cache in seconds
 IB_APT_CACHE_MAX=3600
 
-# Add an apt key.
+# Add a signing key to apt.
+# Usage:
+#   ib-apt-add-key [-l LABEL] [-q] KEYID URL
+#
 # Args:
-#   1: label
-#   2: quiet
-#   3: keyid (str)
-#   4: url (str)
+#   -l LABEL, --label LABEL
+#           label to display for progress on this task
+#
+#   -q, --quiet
+#           suppress progress display
+#   KEYID   signing key id as it appears in `apt-key list`
+#   URL     location of the signing key to download
 ib-apt-add-key() {
-  if ib-command? apt-key; then true; else return 1; fi
-  if ib-command? wget; then true; else return 1; fi
+  if ! ib-command? apt-key; then return 1; fi
+  if ! ib-command? wget; then return 1; fi
 
-  local quiet=${2:-''}
-  local keyid=${3:-''}
-  local url=${4:-''}
-  local label=${1:-"[apt] apt-key add $keyid from $url"}
+  ib-parse-args "$@"
+  local quiet=${IB_ARGS[1]:-''}
+  local keyid=${IB_ARGS[2]:-''}
+  local url=${IB_ARGS[3]:-''}
+  local label=${IB_ARGS[0]:-"[apt] apt-key add $keyid from $url"}
   local skip=$(ib-ok? apt-key list \| grep -qsPe \"$keyid\")
-  ib-action -l "$label" -s "$skip" $quiet -- wget --quiet -O - $url \| apt-key add -
+
+  ib-action -l "$label" -s "$skip" $quiet -- \
+    wget --quiet -O - $url \| apt-key add -
 }
 
 # Update apt repository.
+# Usage:
+#   ib-apt-update [-l LABEL] [-q] [MAXAGE]
+#
 # Args:
-#   1: label
-#   2: quiet
-#   3: age_max (int)
+#   -l LABEL, --label LABEL
+#           label to display for progress on this task
+#
+#   -q, --quiet
+#           suppress progress display
+#   MAXAGE  only run if apt cache is older than this number of seconds
 ib-apt-update() {
-  if ib-command? apt-get; then true; else return 1; fi
+  if ! ib-command? apt-get; then return 1; fi
 
-  local label=${1:-'[apt] apt-get update'}
-  local quiet=${2:-''}
-  local age_max=${3:-""}
+  ib-parse-args "$@"
+  local label=${IB_ARGS[0]:-'[apt] apt-get update'}
+  local quiet=${IB_ARGS[1]:-''}
+  local age_max=${IB_ARGS[2]:-""}
   local age_now=$(date '+%s')
-  local status=
-  local skip=
+  local skip=false
+  local status
   local tried=false
   local value=0
 
@@ -64,23 +80,30 @@ ib-apt-update() {
   return $value
 }
 
-# Install packages.
+# Install packages using apt-get.
+# Usage:
+#   ib-apt-install [-l LABEL] [-q] PACKAGE [PACKAGE...]
+#
 # Args:
-#   1: label
-#   2: quiet
-#   *: packages (str)
+#   -l LABEL, --label LABEL
+#           label to display for progress on this task
+#
+#   -q, --quiet
+#           suppress progress display
+#   PACKAGE name of package to install
 ib-apt-install() {
-  if ib-command? apt-get; then true; else return 1; fi
-  if ib-command? dpkg; then true; else return 1; fi
+  if ! ib-command? apt-get; then return 1; fi
+  if ! ib-command? dpkg; then return 1; fi
 
-  local label=${1:-'[apt] apt-install -y'}
-  local quiet=${2:-''}
-  shift 2
+  ib-parse-args "$@"
+  local label=${IB_ARGS[0]:-'[apt] apt-install -y'}
+  local quiet=${IB_ARGS[1]:-''}
+  local packages="${IB_ARGS[@]:2}"
   local item
   local skip
 
-  ib-apt-update "" "$quiet" "$IB_APT_CACHE_MAX"
-  for item in "$@"; do
+  ib-apt-update $quiet "$IB_APT_CACHE_MAX"
+  for item in "${packages[@]}"; do
     skip=$(ib-ok? dpkg -s $item 2>> /dev/null \| grep -sPe \"^Status.+installed\")
     ib-action -l "$label $item" -s "$skip" $quiet -- apt-get install -y $item
   done

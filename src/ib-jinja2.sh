@@ -5,24 +5,30 @@
 # $ pip install jinja2-cli
 
 # Render a template into a file.
+# Usage:
+#   ib-jinja2 [-l LABEL] [-q] SRC DATA DEST [FLAGS...]
+#
 # Args:
-#   1: label
-#   2: quiet
-#   3: src
-#   4: data
-#   5: dest
-#   *: flags to jinja2
+#   -l LABEL, --label LABEL
+#           label to display for progress on this task
+#
+#   -q, --quiet
+#           suppress progress display
+#   SRC     Jinja2 template file
+#   DATA    JSON data file
+#   DEST    destination file
+#   FLAGS   additional parameters to jinja2
 ib-jinja2() {
-  if ib-command? jinja2; then true; else return 1; fi
+  if ! ib-command? jinja2; then return 1; fi
 
-  local label=${1:-''}
-  local quiet=${2:-''}
-  local src=${3:-''}
-  local data=${4:-''}
-  local dest=${5:-''}
-  shift 5
-  local flags="$@"
-  local content=$(jinja2 "$src" "$data" $flags)
+  ib-parse-args "$@"
+  local label=${IB_ARGS[0]:-''}
+  local quiet=${IB_ARGS[1]:-''}
+  local src=${IB_ARGS[2]:-''}
+  local data=${IB_ARGS[3]:-''}
+  local dest=${IB_ARGS[4]:-''}
+  local flags="${IB_ARGS[@]:5}"
+  local content=$(jinja2 "$src" "$data" ${flags[@]})
 
   echo "$content" | cmp --quiet "$dest" - >> $IB_LOG
   local skip=$(ib-ok? [[ $? == 0 ]])
