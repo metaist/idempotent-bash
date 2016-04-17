@@ -1,2 +1,3 @@
 *.sublime-*
 /dist/idempotent-bash.sh
+/tmp.sh

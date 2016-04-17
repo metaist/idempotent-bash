@@ -6,6 +6,6 @@ setup() { true; }
 teardown() { true; }
 
 test-ib-postgresql-file() {
-  ib postgresql-file -q "SELECT 1;" "$DIR_TEST/test.sql"
+  ib-postgresql-file -q "SELECT 1;" "$DIR_TEST/test.sql"
   ib-assert-true true
 }
