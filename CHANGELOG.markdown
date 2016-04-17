@@ -1,3 +1,12 @@
+# 1.1.1 (2016-04-17)
+- #12: add documentation to public-facing functions
+- #13: add `ib-os-copy-link` to toggle copying or linking directories
+- #14: add `ib-parse-args` to parse label and quiet args
+- #15: add dry run options (global and per-action)
+- #16: fix unbound variable in `ib-pip-install`
+- #17: fix using grep with PCRE
+- #18: add multiple line blocks with `ib-os-append`
+
 # 1.1.0 (2016-03-31)
 - #5: add basic functions for installing and starting/stopping services
 - #7: add [apt-cyg] functions to install [Cygwin] packages

@@ -9,7 +9,7 @@ IFS=$'\n\t'
 
 # script information
 IB_SCRIPT_NAME=${0:-""}
-IB_SCRIPT_VERSION="1.1.0"
+IB_SCRIPT_VERSION="1.1.1"
 
 # script usage information
 IB_USAGE="\
