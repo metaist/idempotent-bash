@@ -9,7 +9,25 @@ IFS=$'\n\t'
 
 # script information
 IB_SCRIPT_NAME=${0:-""}
-IB_SCRIPT_VERSION="1.1.0"
+IB_SCRIPT_VERSION="1.1.1"
+
+# script usage information
+IB_USAGE="\
+Usage: $IB_SCRIPT_NAME [args]
+
+Keyword Arguments:
+  -h, --help  (show usage and exit)
+  --version   (show version and exit)
+  -l, --label (str, default command)
+  -s, --skip  (boolean, default false)
+  -q, --quiet (boolean, default false)
+  -e, --      (varags, command to execute)
+
+Note that -e (or --) must preceed the bash command to execute.
+
+Example:
+  $IB_SCRIPT_NAME --label '[bash] make a directory' -- mkdir -p foo
+"
 
 # terminal colors
 if [[ $(command -v tput) ]]; then
@@ -22,11 +40,17 @@ else
   IB_COLOR_NORMAL="\e[0m"
 fi
 
+# arguments to an IB command
+IB_ARGS=()
+
 # path to log file
 IB_LOG="/dev/null"
 
 # path to screen out
 IB_STDOUT="/dev/stdout"
+
+# whether to skip executing actions
+IB_DRY_RUN=false
 
 # last action executed
 IB_LAST_ACTION=""
@@ -84,6 +108,23 @@ ib-join() {
   echo "$*"
 }
 
+# Parse an array of arguments.
+# Args:
+#   -l, --label (str)
+#   -q, --quiet
+#   *: remaining args
+ib-parse-args() {
+  IB_ARGS=('' '')
+  while [[ "$#" > 0 ]]; do
+    case ${1:-""} in
+      -l|--label) IB_ARGS[0]=${2:-''}; shift 2;;
+      -q|--quiet) IB_ARGS[1]="-q"; shift 1;;
+      *) IB_ARGS+=( "${1:-''}" ); shift 1;;
+    esac
+  done
+}
+
+
 # Print the start of an action.
 # Args:
 #   1: label (str)
@@ -119,34 +160,15 @@ ib-action-stop() {
   return $value
 }
 
-# Echo the usage string for the build.
-ib-usage() {
-  cat << EOF
-Usage: $IB_SCRIPT_NAME [args]
-
-Keyword Arguments:
-  -h, --help  (show usage and exit)
-  --version   (show version and exit)
-  -l, --label (str, default command)
-  -s, --skip  (boolean, default false)
-  -q, --quiet (boolean, default false)
-  -e, --      (varags, command to execute)
-
-Note that -e (or --) must preceed the bash command to execute.
-
-Example:
-  $IB_SCRIPT_NAME --label "[bash] make a directory" -- mkdir -p foo
-EOF
-}
-
 # Perform an idempotent action.
 # Keyword Arguments:
-#   -h, --help  (show usage and exit)
-#   --version   (show version and exit)
-#   -l, --label (str, default command)
-#   -s, --skip  (boolean, default false)
-#   -q, --quiet (boolean, default false)
-#   -e, --      (varags, command to execute)
+#   -h, --help    (show usage and exit)
+#   --version     (show version and exit)
+#   -l, --label   (str, default command)
+#   -n, --dry-run (boolean, default false)
+#   -q, --quiet   (boolean, default false)
+#   -s, --skip    (boolean, default false)
+#   -e, --        (varags, command to execute)
 #
 # Note that `-e` (or `--`) must preceed the bash command to execute.
 #
@@ -156,33 +178,40 @@ ib-action() {
   local label=""
   local skip=false
   local quiet=false
+  local dryrun=false
 
   local tried=false
   local value=0
 
   while [[ "$#" > 0 ]]; do
     case ${1:-""} in
-      -h|--help) ib-usage; exit; break;;
+      -h|--help) echo $IB_USAGE; exit; break;;
       --version)
         echo "$(basename ${IB_SCRIPT_NAME%.*}) v$IB_SCRIPT_VERSION"
         exit 0
         break;;
       -l|--label) label=${2:-""}; shift 2;;
-      -s|--skip) skip=${2:-""}; shift 2;;
+      -n|--dry-run) dryrun=true; shift 1;;
       -q|--quiet) quiet=true; shift 1;;
+      -s|--skip) skip=${2:-""}; shift 2;;
       -e|--) shift 1; break;;
-      *) echo "Unknown paramter: $1"; ib-usage; exit 1; break;;
+      *) printf "Unknown paramter: $1\n$IB_USAGE"; exit 1; break;;
     esac
   done
 
   if [[ "$label" == "" ]]; then label="[bash] $(ib-join ' ' $@)"; fi
+  if ib-truthy? "$dryrun"; then label="[DRY RUN] $label"; fi
 
   if ib-falsy? "$quiet"; then ib-action-start "$label"; fi
   if ib-falsy? "$skip"; then
     tried=true
-    IB_LAST_ACTION="$@"
-    echo -e "\n\$ $@" >> $IB_LOG
-    eval "$@" &>> $IB_LOG
+    if ib-falsy? $IB_DRY_RUN && ib-falsy? "$dryrun"; then
+      IB_LAST_ACTION="$@"
+      echo -e "\n\$ $@" >> $IB_LOG
+      eval "$@" &>> $IB_LOG
+    else
+      echo -e "\n[DRY RUN]\n\$ $@\n" >> $IB_LOG
+    fi
     value=$?
   fi
   if ib-falsy? "$quiet"; then ib-action-stop "$label" "$tried" "$value"; fi
@@ -190,6 +219,7 @@ ib-action() {
   return $value
 }
 
+# DEPRECATED: Will be removed in next major release.
 # Run an idempotent bash function.
 # Args:
 #   1: action
@@ -214,6 +244,7 @@ ib() {
     esac
   done
 
+  echo "WARNING: ib() is deprecated; use ib-$action() instead."
   ib-$action "$label" "$quiet" $@
 }
 

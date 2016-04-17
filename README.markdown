@@ -27,7 +27,7 @@ setup_pip() {
   local url="https://bootstrap.pypa.io/get-pip.py"
   ib-action -l "$label" -s "$skip" -- wget --quiet -O - $url \| sudo python
 
-  ib pip-install pyyaml jinja2-cli
+  ib-pip-install pyyaml jinja2-cli
 }
 
 setup_pip
@@ -44,6 +44,9 @@ For setup scripts, this means that when you re-run your setup script, it only ru
 This project was inspired by [Ansible] and [Bash Booster]. I liked the idea of idempotent setup scripts, but I needed more reporting of status to log files so I can debug particularly tricky environments.
 
 I haven't used [Puppet] or [Chef], but those seem popular right now.
+
+## License
+Licensed under the MIT License.
 
 [Ansible]: https://www.ansible.com/
 [Bash Booster]: http://www.bashbooster.net/

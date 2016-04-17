@@ -17,6 +17,6 @@ teardown() {
 }
 
 test-ib-jinja2() {
-  ib jinja2 -q "$TEST_TMPL" "$TEST_DATA" "$TEST_DEST" -D other=works
+  ib-jinja2 -q "$TEST_TMPL" "$TEST_DATA" "$TEST_DEST" -D other=works
   ib-assert-eq "$(<$TEST_DEST)" "This is the thing that works"
 }
