@@ -27,7 +27,7 @@ setup_pip() {
   local url="https://bootstrap.pypa.io/get-pip.py"
   ib-action -l "$label" -s "$skip" -- wget --quiet -O - $url \| sudo python
 
-  ib pip-install pyyaml jinja2-cli
+  ib-pip-install pyyaml jinja2-cli
 }
 
 setup_pip
