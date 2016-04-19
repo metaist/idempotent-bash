@@ -14,7 +14,7 @@ IB_TEST_SCRIPT_ARGS=$@
 
 cd "$(dirname $IB_TEST_SCRIPT_NAME)"
 
-if [[ $EUID != 0 ]]; then
+if [[ $EUID != 0 && "Cygwin" != $(uname -o) ]]; then
   if [[ "${1:-''}" == "--try-root" ]]; then
     echo "Re-run this script with root privileges."
     exit 1
