@@ -102,6 +102,8 @@ ib-apt-install() {
   local item
   local skip
 
+  readarray -t packages <<<"$packages"
+
   ib-apt-update $quiet "$IB_APT_CACHE_MAX"
   for item in "${packages[@]}"; do
     skip=$(ib-ok? dpkg -s $item 2>> /dev/null \| grep -sPe \"^Status.+installed\")
