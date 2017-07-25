@@ -19,7 +19,7 @@ ib-pip-install() {
   if ! ib-command? pip; then return 1; fi
 
   ib-parse-args "$@"
-  local label=${IB_ARGS[0]:-'[pip] pip install '}
+  local label=${IB_ARGS[0]:-'[pip] pip install'}
   local quiet=${IB_ARGS[1]:-''}
   local packages=("${IB_ARGS[@]:2}")
   local pkgcount=${#packages[@]}
