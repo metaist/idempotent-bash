@@ -4,11 +4,11 @@ TEST_URI="https://github.com/metaist/idempotent-bash.git"
 TEST_DIR="/tmp/idempotent-bash-alt"
 
 setup() {
-  rm -rf TEST_DIR
+  rm -rf $TEST_DIR
 }
 
 teardown() {
-  rm -rf TEST_DIR
+  rm -rf $TEST_DIR
 }
 
 test-ib-git-clone() {
