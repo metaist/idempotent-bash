@@ -9,14 +9,13 @@ test-ib-service-install() { true; }
 
 test-ib-service-state() {
   local status
+  local name="apache2"
 
-  ib-service-state -q "apache2" "stop"
-
+  ib-service-state -q "$name" "stop"
   service $name status 2&> /dev/null
   ib-assert-true [[ "$?" != "0" ]]
 
-  ib-service-state -q "apache2" "start"
+  ib-service-state -q "$name" "start"
   service $name status 2&> /dev/null
-  sleep 0.3
   ib-assert-true [[ "$?" == "0" ]]
 }

@@ -21,7 +21,7 @@ ib-service-install() {
   local name=${IB_ARGS[2]:-''}
   local skip=$(ib-ok? stat -t /etc/rc*/???$name 2>> /dev/null)
   ib-action -l "$label" -s "$skip" $quiet -- \
-    update-rc.d "$name" defaults 98 02
+    sudo update-rc.d "$name" defaults 98 02
 }
 
 # Set the service state.
@@ -43,7 +43,7 @@ ib-service-state() {
   local quiet=${IB_ARGS[1]:-''}
   local name=${IB_ARGS[2]:-''}
   local state=${IB_ARGS[3]:-''}
-  local label=${IB_ARGS[0]:-"[service] service $name $state"}
+  local label=${IB_ARGS[0]:-"[service] sudo service $name $state"}
   local status=
   local skip=false
   local tried=false
@@ -61,8 +61,8 @@ ib-service-state() {
 
   if ib-falsy? $skip; then
     tried=true
-    echo -e "\n\$ service $name $state" >> $IB_LOG
-    service $name $state &>> $IB_LOG
+    echo -e "\n\$ sudo service $name $state" >> $IB_LOG
+    sudo service $name $state &>> $IB_LOG
     sleep 0.3
     service $name status 2&> /dev/null
     value=$?

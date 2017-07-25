@@ -32,6 +32,7 @@ test-ib-os-remove-dir() {
 }
 
 test-ib-os-chmod() {
+  umask 0022
   touch "$TEST_FILE"
   ib-assert-eq "$(stat --printf='%a' $TEST_FILE)" "644"
   ib-os-chmod -q "$TEST_FILE" 777

@@ -14,19 +14,6 @@ IB_TEST_SCRIPT_ARGS=$@
 
 cd "$(dirname $IB_TEST_SCRIPT_NAME)"
 
-if [[ $EUID != 0 && "Cygwin" != $(uname -o) ]]; then
-  if [[ "${1:-''}" == "--try-root" ]]; then
-    echo "Re-run this script with root privileges."
-    exit 1
-  else
-    exec sudo -EH $IB_TEST_SCRIPT_NAME --try-root $IB_TEST_SCRIPT_ARGS
-    exit 0
-  fi
-fi # user has root
-
-if [[ "${1:-''}" == "--try-root" ]]; then shift 1; fi
-# extra param removed
-
 run-file() {
   local fn
   for fn in $(grep -oP '^(test[_-])[^(]*' ${1:-''}); do
