@@ -23,6 +23,7 @@ ib-apt-cyg-install() {
   local item
   local skip
 
+  readarray -t packages <<< "$packages"
   for item in "${packages[@]}"; do
     skip=$(ib-ok? apt-cyg list \| grep -qsPe \"^$item\$\")
     ib-action -l "$label $item" -s "$skip" $quiet -- \
