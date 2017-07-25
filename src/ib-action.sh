@@ -200,7 +200,9 @@ ib-action() {
   done
 
   if [[ "$label" == "" ]]; then label="[bash] $(ib-join ' ' $@)"; fi
-  if ib-truthy? "$dryrun"; then label="[DRY RUN] $label"; fi
+  if ib-truthy? $IB_DRY_RUN || ib-truthy? "$dryrun"; then
+    label="[DRY RUN] $label"
+  fi
 
   if ib-falsy? "$quiet"; then ib-action-start "$label"; fi
   if ib-falsy? "$skip"; then
