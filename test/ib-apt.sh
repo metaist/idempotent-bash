@@ -23,6 +23,6 @@ test-ib-apt-update() {
 test-ib-apt-install() {
   if ib-command? dpkg; then true; else return 1; fi
 
-  ib-apt-install -q python
+  ib-apt-install -q python ruby
   ib-assert-true $(dpkg -s python | grep -qPe installed)
 }
