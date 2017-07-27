@@ -6,7 +6,7 @@ setup() { true; }
 teardown() { true; }
 
 test-ib-postgresql-file() {
-  ib-postgresql-file "SELECT 1 LIMIT 0;" "$DIR_TEST/test.sql"
+  ib-postgresql-file -q "SELECT 1 LIMIT 0;" "$DIR_TEST/test.sql"
   ib-assert-eq "$IB_LAST_ACTION" \
     "sudo -u postgres psql -f - < $DIR_TEST/test.sql"
 }
