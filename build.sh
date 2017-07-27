@@ -34,6 +34,7 @@ do_test() {
 
 do_build() {
   echo '==> build'
+  rm -f "$FILE_DIST"
   cat src/*.sh >> "$FILE_DIST"
   chmod +x "$FILE_DIST"
 }

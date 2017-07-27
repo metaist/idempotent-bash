@@ -6,14 +6,15 @@
 # WARNING: This only works properly for pinned versions of packages.
 #
 # Usage:
-#   ib-pip-install [-l LABEL] [-q] PACKAGE [PACKAGE...]
+#   ib-pip-install [-l LABEL] [-q] [-u USER] PACKAGE [PACKAGE...]
 #
 # Args:
 #   -l LABEL, --label LABEL
 #           label to display for progress on this task
-#
 #   -q, --quiet
 #           suppress progress display
+#   -u USER, --user USER
+#           user to run as
 #   PACKAGE name of package to install
 ib-pip-install() {
   if ! ib-command? pip; then return 1; fi
@@ -21,7 +22,8 @@ ib-pip-install() {
   ib-parse-args "$@"
   local label=${IB_ARGS[0]:-'[pip] pip install'}
   local quiet=${IB_ARGS[1]:-''}
-  local packages=("${IB_ARGS[@]:2}")
+  local user=${IB_ARGS[2]:-''}
+  local packages=("${IB_ARGS[@]:3}")
   local pkgcount=${#packages[@]}
   local skip
   local item=''
@@ -50,6 +52,7 @@ ${packages[index]:-''}"
 
     pattern="^$item"
     skip=$(ib-ok? grep -iqsPe \"$pattern\" <<< "$existing")
-    ib-action -l "$label $item" -s "$skip" $quiet -- pip install $item
+    ib-action -l "$label $item" -s "$skip" -u "$user" $quiet -- \
+      pip install $item
   done
 }
