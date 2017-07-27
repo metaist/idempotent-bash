@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Copyright 2016 Metaist LLC
+# Copyright 2017 Metaist LLC
 # MIT License
 
 # Build file for idempotent-bash.
