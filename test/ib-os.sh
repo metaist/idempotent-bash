@@ -32,6 +32,7 @@ test-ib-os-remove-dir() {
 }
 
 test-ib-os-chmod() {
+  umask 0022
   touch "$TEST_FILE"
   ib-assert-eq "$(stat --printf='%a' $TEST_FILE)" "644"
   ib-os-chmod -q "$TEST_FILE" 777
@@ -52,12 +53,22 @@ test-ib-os-copy() {
 }
 
 test-ib-os-link() {
-  local TEST_DIR_2="${TEST_DIR}-link"
-  ib-assert-false [[ -e "$TEST_DIR_2" ]]
+  local TEST_LINK="${TEST_DIR}-link"
+  local TEST_DIR_2="${TEST_DIR}-else"
+
+  ib-assert-false [[ -e "$TEST_LINK" ]]
   mkdir "$TEST_DIR"
-  ib-os-link -q "$TEST_DIR" "$TEST_DIR_2"
-  ib-assert-true [[ -L "$TEST_DIR_2" ]]
-  ib-assert-eq "$(readlink -f $TEST_DIR)" "$(readlink -f $TEST_DIR_2)"
+
+  ib-os-link -q "$TEST_DIR" "$TEST_LINK"
+  ib-assert-true [[ -L "$TEST_LINK" ]]
+  ib-assert-eq "$(readlink -f $TEST_DIR)" "$(readlink -f $TEST_LINK)"
+
+  mkdir "$TEST_DIR_2"
+  ib-os-link -q "$TEST_DIR_2" "$TEST_LINK"
+  ib-assert-true [[ -L "$TEST_LINK" ]]
+  ib-assert-eq "$(readlink -f $TEST_DIR_2)" "$(readlink -f $TEST_LINK)"
+
+  rm -rf "$TEST_LINK"
   rm -rf "$TEST_DIR_2"
 }
 

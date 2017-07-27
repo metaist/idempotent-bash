@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Copyright 2016 Metaist LLC
+# Copyright 2017 Metaist LLC
 # MIT License
 
 # Test harness for idempotent-bash.
@@ -13,19 +13,6 @@ IB_TEST_SCRIPT_NAME=$(readlink -f ${BASH_SOURCE[0]})
 IB_TEST_SCRIPT_ARGS=$@
 
 cd "$(dirname $IB_TEST_SCRIPT_NAME)"
-
-if [[ $EUID != 0 ]]; then
-  if [[ "${1:-''}" == "--try-root" ]]; then
-    echo "Re-run this script with root privileges."
-    exit 1
-  else
-    exec sudo -EH $IB_TEST_SCRIPT_NAME --try-root $IB_TEST_SCRIPT_ARGS
-    exit 0
-  fi
-fi # user has root
-
-if [[ "${1:-''}" == "--try-root" ]]; then shift 1; fi
-# extra param removed
 
 run-file() {
   local fn

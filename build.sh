@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Copyright 2016 Metaist LLC
+# Copyright 2017 Metaist LLC
 # MIT License
 
 # Build file for idempotent-bash.
@@ -34,6 +34,7 @@ do_test() {
 
 do_build() {
   echo '==> build'
+  rm -f "$FILE_DIST"
   cat src/*.sh >> "$FILE_DIST"
   chmod +x "$FILE_DIST"
 }

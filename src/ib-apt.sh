@@ -9,14 +9,15 @@ IB_APT_CACHE_MAX=3600
 
 # Add a signing key to apt.
 # Usage:
-#   ib-apt-add-key [-l LABEL] [-q] KEYID URL
+#   ib-apt-add-key [-l LABEL] [-q] [-u USER] KEYID URL
 #
 # Args:
 #   -l LABEL, --label LABEL
 #           label to display for progress on this task
-#
 #   -q, --quiet
 #           suppress progress display
+#   -u USER, --user USER
+#           user to run as
 #   KEYID   signing key id as it appears in `apt-key list`
 #   URL     location of the signing key to download
 ib-apt-add-key() {
@@ -25,33 +26,36 @@ ib-apt-add-key() {
 
   ib-parse-args "$@"
   local quiet=${IB_ARGS[1]:-''}
-  local keyid=${IB_ARGS[2]:-''}
-  local url=${IB_ARGS[3]:-''}
-  local label=${IB_ARGS[0]:-"[apt] apt-key add $keyid from $url"}
+  local user=${IB_ARGS[2]:-'root'}
+  local keyid=${IB_ARGS[3]:-''}
+  local url=${IB_ARGS[4]:-''}
+  local label=${IB_ARGS[0]:-"[apt] sudo apt-key add $keyid from $url"}
   local skip=$(ib-ok? apt-key list \| grep -qsPe \"$keyid\")
 
-  ib-action -l "$label" -s "$skip" $quiet -- \
-    wget --quiet -O - $url \| apt-key add -
+  ib-action -l "$label" -s "$skip" -u "$user" $quiet -- \
+    wget --quiet -O - $url \| sudo -u "$user" apt-key add -
 }
 
 # Update apt repository.
 # Usage:
-#   ib-apt-update [-l LABEL] [-q] [MAXAGE]
+#   ib-apt-update [-l LABEL] [-q] [-u USER] [MAXAGE]
 #
 # Args:
 #   -l LABEL, --label LABEL
 #           label to display for progress on this task
-#
 #   -q, --quiet
 #           suppress progress display
+#   -u USER, --user USER
+#           user to run as
 #   MAXAGE  only run if apt cache is older than this number of seconds
 ib-apt-update() {
   if ! ib-command? apt-get; then return 1; fi
 
   ib-parse-args "$@"
-  local label=${IB_ARGS[0]:-'[apt] apt-get update'}
+  local label=${IB_ARGS[0]:-'[apt] sudo apt-get update'}
   local quiet=${IB_ARGS[1]:-''}
-  local age_max=${IB_ARGS[2]:-""}
+  local user=${IB_ARGS[2]:-'root'}
+  local age_max=${IB_ARGS[3]:-''}
   local age_now=$(date '+%s')
   local skip=false
   local status
@@ -69,8 +73,8 @@ ib-apt-update() {
 
   if ib-falsy? $skip; then
     tried=true
-    echo -e "\n\$ apt-get update" >> $IB_LOG
-    status=$(apt-get update 2>&1)
+    echo -e "\n\$ sudo apt-get update" >> $IB_LOG
+    status=$(sudo -u $user apt-get update 2>&1)
     echo "$status" >> $IB_LOG
     echo "$status" | grep -qsPe '^[WE]:'
     value="$(( ! $? ))"
@@ -82,29 +86,34 @@ ib-apt-update() {
 
 # Install packages using apt-get.
 # Usage:
-#   ib-apt-install [-l LABEL] [-q] PACKAGE [PACKAGE...]
+#   ib-apt-install [-l LABEL] [-q] [-u USER] PACKAGE [PACKAGE...]
 #
 # Args:
 #   -l LABEL, --label LABEL
 #           label to display for progress on this task
-#
 #   -q, --quiet
 #           suppress progress display
+#   -u USER, --user USER
+#           user to run as
 #   PACKAGE name of package to install
 ib-apt-install() {
   if ! ib-command? apt-get; then return 1; fi
   if ! ib-command? dpkg; then return 1; fi
 
   ib-parse-args "$@"
-  local label=${IB_ARGS[0]:-'[apt] apt-install -y'}
+  local label=${IB_ARGS[0]:-'[apt] sudo apt-get install -y'}
   local quiet=${IB_ARGS[1]:-''}
-  local packages="${IB_ARGS[@]:2}"
+  local user=${IB_ARGS[2]:-'root'}
+  local packages="${IB_ARGS[@]:3}"
   local item
   local skip
 
-  ib-apt-update $quiet "$IB_APT_CACHE_MAX"
+  ib-apt-update -u "$user" $quiet "$IB_APT_CACHE_MAX"
+
+  readarray -t packages <<< "$packages"
   for item in "${packages[@]}"; do
     skip=$(ib-ok? dpkg -s $item 2>> /dev/null \| grep -sPe \"^Status.+installed\")
-    ib-action -l "$label $item" -s "$skip" $quiet -- apt-get install -y $item
+    ib-action -l "$label $item" -s "$skip" -u "$user" $quiet -- \
+      apt-get install -y $item
   done
 }
