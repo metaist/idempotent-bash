@@ -203,9 +203,9 @@ ib-os-append() {
   local label=${IB_ARGS[0]:-''}
   local quiet=${IB_ARGS[1]:-''}
   local dest=${IB_ARGS[2]:-''}
-  local pattern="^${IB_ARGS[3]:-''}\$"
+  local pattern=$(printf '^%q$' ${IB_ARGS[3]:-''})
   local line="${IB_ARGS[@]:3}"
-  local skip=$(ib-ok? grep -qsPe \"$pattern\" "$dest")
+  local skip=$(ib-ok? grep -qsPe \'$pattern\' "$dest")
 
   label=${label:-"[os] append to $dest"}
   ib-action -l "$label" -s "$skip" $quiet -- \
