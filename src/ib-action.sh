@@ -16,12 +16,13 @@ IB_USAGE="\
 Usage: $IB_SCRIPT_NAME [args]
 
 Keyword Arguments:
-  -h, --help  (show usage and exit)
-  --version   (show version and exit)
-  -l, --label (str, default command)
-  -s, --skip  (boolean, default false)
-  -q, --quiet (boolean, default false)
-  -e, --      (varags, command to execute)
+  -h, --help    show usage and exit
+  --version     show version and exit
+  -l, --label   string to display (default: command to run)
+  -s, --skip    whether to skip this task (default: false)
+  -q, --quiet   whether to hide the label (default: false)
+  -u, --user    which user to run the command as (default: current)
+  -e, --        command to execute
 
 Note that -e (or --) must preceed the bash command to execute.
 
@@ -112,13 +113,15 @@ ib-join() {
 # Args:
 #   -l, --label (str)
 #   -q, --quiet
+#   -u, --user (str)
 #   *: remaining args
 ib-parse-args() {
-  IB_ARGS=('' '')
+  IB_ARGS=('' '' '')
   while [[ "$#" > 0 ]]; do
     case ${1:-""} in
       -l|--label) IB_ARGS[0]=${2:-''}; shift 2;;
       -q|--quiet) IB_ARGS[1]="-q"; shift 1;;
+      -u|--user) IB_ARGS[2]=${2:-''}; shift 2;;
       *) IB_ARGS+=( "${1:-''}" ); shift 1;;
     esac
   done
@@ -162,13 +165,13 @@ ib-action-stop() {
 
 # Perform an idempotent action.
 # Keyword Arguments:
-#   -h, --help    (show usage and exit)
-#   --version     (show version and exit)
-#   -l, --label   (str, default command)
-#   -n, --dry-run (boolean, default false)
-#   -q, --quiet   (boolean, default false)
-#   -s, --skip    (boolean, default false)
-#   -e, --        (varags, command to execute)
+#   -h, --help    show usage and exit
+#   --version     show version and exit
+#   -l, --label   string to display (default: command to run)
+#   -s, --skip    whether to skip this task (default: false)
+#   -q, --quiet   whether to hide the label (default: false)
+#   -u, --user    which user to run the command as (default: current)
+#   -e, --        command to execute
 #
 # Note that `-e` (or `--`) must preceed the bash command to execute.
 #
@@ -179,6 +182,7 @@ ib-action() {
   local skip=false
   local quiet=false
   local dryrun=false
+  local user=""
 
   local tried=false
   local value=0
@@ -194,6 +198,7 @@ ib-action() {
       -n|--dry-run) dryrun=true; shift 1;;
       -q|--quiet) quiet=true; shift 1;;
       -s|--skip) skip=${2:-""}; shift 2;;
+      -u|--user) user=${2:-""}; shift 2;;
       -e|--) shift 1; break;;
       *) printf "Unknown paramter: $1\n$IB_USAGE"; exit 1; break;;
     esac
@@ -209,10 +214,13 @@ ib-action() {
     tried=true
     if ib-falsy? $IB_DRY_RUN && ib-falsy? "$dryrun"; then
       IB_LAST_ACTION="$@"
-      echo -e "\n\$ $@" >> $IB_LOG
-      eval "$@" &>> $IB_LOG
+      if [[ "$user" != "" ]]; then
+        IB_LAST_ACTION="sudo -u $user $IB_LAST_ACTION"
+      fi
+      echo -e "\n\$ $IB_LAST_ACTION" >> $IB_LOG
+      eval "$IB_LAST_ACTION" &>> $IB_LOG
     else
-      echo -e "\n[DRY RUN]\n\$ $@\n" >> $IB_LOG
+      echo -e "\n[DRY RUN]\n\$ $IB_LAST_ACTION\n" >> $IB_LOG
     fi
     value=$?
   fi
