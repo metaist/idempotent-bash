@@ -33,7 +33,7 @@ ib-apt-add-key() {
   local skip=$(ib-ok? apt-key list \| grep -qsPe \"$keyid\")
 
   ib-action -l "$label" -s "$skip" -u "$user" $quiet -- \
-    wget --quiet -O - $url \| apt-key add -
+    wget --quiet -O - $url \| sudo -u "$user" apt-key add -
 }
 
 # Update apt repository.
