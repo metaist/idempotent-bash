@@ -67,6 +67,12 @@ ib-ok?() {
   eval "$@" > /dev/null && echo "true" || echo "false"
 }
 
+# Suppress output. Always returns 0.
+ib-quiet() {
+  $@ 2&> /dev/null
+  return 0
+}
+
 # Is this non-empty or truthy?
 # Args:
 #   1: item (str, boolean)
@@ -126,7 +132,6 @@ ib-parse-args() {
     esac
   done
 }
-
 
 # Print the start of an action.
 # Args:
