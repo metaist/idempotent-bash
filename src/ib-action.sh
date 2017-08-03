@@ -89,6 +89,16 @@ ib-falsy?() {
   [[ "$item" == "" || "$item" == false ]]
 }
 
+# Is this item in the array?
+# Args:
+#   1: needle
+#   *: haystack
+ib-in?() {
+  local item
+  for item in "${@:2}"; do [[ "$item" == "$1" ]] && return 0; done
+  return 1
+}
+
 # Is this command valid?
 # Args:
 #   1: item (str)
