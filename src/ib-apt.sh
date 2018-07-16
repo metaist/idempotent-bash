@@ -107,12 +107,17 @@ ib-apt-install() {
   local packages="${IB_ARGS[@]:3}"
   local item
   local skip
-
-  ib-apt-update -u "$user" $quiet "$IB_APT_CACHE_MAX"
+  local updated=false
+  local regex_installed='"^Status.+installed"'
 
   readarray -t packages <<< "$packages"
   for item in "${packages[@]}"; do
-    skip=$(ib-ok? dpkg -s $item 2>> /dev/null \| grep -sPe \"^Status.+installed\")
+    skip=$(ib-ok? dpkg -s $item 2>> /dev/null \| grep -sPe $regex_installed)
+    if [[ !"$updated" && !"$skip" ]]; then
+      ib-apt-update -u "$user" $quiet "$IB_APT_CACHE_MAX"
+      updated=true
+    fi
+
     ib-action -l "$label $item" -s "$skip" -u "$user" $quiet -- \
       apt-get install -y $item
   done

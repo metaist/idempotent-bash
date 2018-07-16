@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog] and this project adheres to [Semantic 
 [#32]: https://github.com/metaist/idempotent-bash/issues/32
 [#33]: https://github.com/metaist/idempotent-bash/issues/33
 [#34]: https://github.com/metaist/idempotent-bash/issues/34
+[#36]: https://github.com/metaist/idempotent-bash/issues/36
 [#37]: https://github.com/metaist/idempotent-bash/issues/37
 [Unreleased]: https://github.com/metaist/idempotent-bash/compare/1.1.2...HEAD
 ## [Unreleased]
@@ -20,6 +21,9 @@ The format is based on [Keep a Changelog] and this project adheres to [Semantic 
 **Changed**
 - [#33]: `ib-os-append` uses the first line of a multiline text to pass to `grep`
 - [#37]: changelog to follow [Keep a Changelog] format
+
+**Fixed**
+- [#36]: only run `ib-apt-update` if there's a need to install anything
 
 ---
 [#19]: https://github.com/metaist/idempotent-bash/issues/19
