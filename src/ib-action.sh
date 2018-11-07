@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Copyright 2017 Metaist LLC
+# Copyright 2018 Metaist LLC
 # MIT License
 
 # bash strict mode
@@ -9,7 +9,7 @@ IFS=$'\n\t'
 
 # script information
 IB_SCRIPT_NAME=${0:-""}
-IB_SCRIPT_VERSION="1.1.2-pre"
+IB_SCRIPT_VERSION="1.1.3"
 
 # script usage information
 IB_USAGE="\

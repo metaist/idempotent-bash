@@ -7,13 +7,18 @@ The format is based on [Keep a Changelog] and this project adheres to [Semantic 
 [Semantic Versioning]: http://semver.org/spec/v2.0.0.html
 
 ---
+[Unreleased]: https://github.com/metaist/idempotent-bash/compare/1.1.3...HEAD
+## [Unreleased]
+
+---
 [#32]: https://github.com/metaist/idempotent-bash/issues/32
 [#33]: https://github.com/metaist/idempotent-bash/issues/33
 [#34]: https://github.com/metaist/idempotent-bash/issues/34
 [#36]: https://github.com/metaist/idempotent-bash/issues/36
 [#37]: https://github.com/metaist/idempotent-bash/issues/37
-[Unreleased]: https://github.com/metaist/idempotent-bash/compare/1.1.2...HEAD
-## [Unreleased]
+[#38]: https://github.com/metaist/idempotent-bash/issues/38
+[1.1.3]: https://github.com/metaist/idempotent-bash/compare/1.1.2...1.1.3
+## [1.1.3] - 2018-11-07
 **Added**
 - [#32]: `ib-quiet` to suppress output
 - [#34]: `ib-in?` to check if item is in array
@@ -44,7 +49,7 @@ The format is based on [Keep a Changelog] and this project adheres to [Semantic 
 **Added**
 - [#24]: [git] functions to manage repositories
 - [#25]: `ib-postgresql-sql` to conditionally execute a single command
-- [#28]: examples
+- [#28]: common examples
 - [#29]: `--user` flag to handle different user
 
 **Changed**
