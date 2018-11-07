@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Copyright 2017 Metaist LLC
+# Copyright 2018 Metaist LLC
 # MIT License
 
 # Test harness for idempotent-bash.

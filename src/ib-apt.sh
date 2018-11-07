@@ -7,6 +7,9 @@ IB_APT_CACHE_PATH="/var/cache/apt/pkgcache.bin"
 # maximum age of apt cache in seconds
 IB_APT_CACHE_MAX=3600
 
+# prevent apt-key from yelling at us (see #38)
+export APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=1
+
 # Add a signing key to apt.
 # Usage:
 #   ib-apt-add-key [-l LABEL] [-q] [-u USER] KEYID URL
@@ -18,7 +21,7 @@ IB_APT_CACHE_MAX=3600
 #           suppress progress display
 #   -u USER, --user USER
 #           user to run as
-#   KEYID   signing key id as it appears in `apt-key list`
+#   KEYID   signing key id as it appears in `apt-key adv --list-public-keys`
 #   URL     location of the signing key to download
 ib-apt-add-key() {
   if ! ib-command? apt-key; then return 1; fi
@@ -30,7 +33,7 @@ ib-apt-add-key() {
   local keyid=${IB_ARGS[3]:-''}
   local url=${IB_ARGS[4]:-''}
   local label=${IB_ARGS[0]:-"[apt] sudo apt-key add $keyid from $url"}
-  local skip=$(ib-ok? apt-key list \| grep -qsPe \"$keyid\")
+  local skip=$(ib-ok? apt-key adv --list-public-keys \| grep -qsPe \"$keyid\")
 
   ib-action -l "$label" -s "$skip" -u "$user" $quiet -- \
     wget --quiet -O - $url \| sudo -u "$user" apt-key add -
@@ -107,12 +110,17 @@ ib-apt-install() {
   local packages="${IB_ARGS[@]:3}"
   local item
   local skip
-
-  ib-apt-update -u "$user" $quiet "$IB_APT_CACHE_MAX"
+  local updated=false
+  local regex_installed='"^Status.+installed"'
 
   readarray -t packages <<< "$packages"
   for item in "${packages[@]}"; do
-    skip=$(ib-ok? dpkg -s $item 2>> /dev/null \| grep -sPe \"^Status.+installed\")
+    skip=$(ib-ok? dpkg -s $item 2>> /dev/null \| grep -sPe $regex_installed)
+    if [[ !"$updated" && !"$skip" ]]; then
+      ib-apt-update -u "$user" $quiet "$IB_APT_CACHE_MAX"
+      updated=true
+    fi
+
     ib-action -l "$label $item" -s "$skip" -u "$user" $quiet -- \
       apt-get install -y $item
   done

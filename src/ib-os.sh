@@ -219,8 +219,9 @@ ib-os-append() {
   local user=${IB_ARGS[2]:-''}
   local dest=${IB_ARGS[3]:-''}
   local label=${IB_ARGS[0]:-"[os] append to $dest"}
-  local pattern=$(printf '^%q$' ${IB_ARGS[4]:-''})
   local line="${IB_ARGS[@]:4}"
+  local first=(${line[@]})
+  local pattern=$(printf '^%q$' ${first:-''})
   local skip=$(ib-ok? grep -qsPe \'$pattern\' "$dest")
   ib-action -l "$label" -s "$skip" -u "$user" $quiet -- \
     tee --append "$dest" <<< "$line"

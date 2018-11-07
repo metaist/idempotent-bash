@@ -9,7 +9,7 @@ test-ib-service-install() { true; }
 
 test-ib-service-state() {
   local status
-  local name="apache2"
+  local name="urandom"
 
   ib-service-state -q "$name" "stop"
   service $name status 2&> /dev/null

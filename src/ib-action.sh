@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Copyright 2017 Metaist LLC
+# Copyright 2018 Metaist LLC
 # MIT License
 
 # bash strict mode
@@ -9,7 +9,7 @@ IFS=$'\n\t'
 
 # script information
 IB_SCRIPT_NAME=${0:-""}
-IB_SCRIPT_VERSION="1.1.2"
+IB_SCRIPT_VERSION="1.1.3"
 
 # script usage information
 IB_USAGE="\
@@ -67,6 +67,12 @@ ib-ok?() {
   eval "$@" > /dev/null && echo "true" || echo "false"
 }
 
+# Suppress output. Always returns 0.
+ib-quiet() {
+  $@ 2&> /dev/null
+  return 0
+}
+
 # Is this non-empty or truthy?
 # Args:
 #   1: item (str, boolean)
@@ -81,6 +87,16 @@ ib-truthy?() {
 ib-falsy?() {
   local item=${1:-''}
   [[ "$item" == "" || "$item" == false ]]
+}
+
+# Is this item in the array?
+# Args:
+#   1: needle
+#   *: haystack
+ib-in?() {
+  local item
+  for item in "${@:2}"; do [[ "$item" == "$1" ]] && return 0; done
+  return 1
 }
 
 # Is this command valid?
@@ -126,7 +142,6 @@ ib-parse-args() {
     esac
   done
 }
-
 
 # Print the start of an action.
 # Args:

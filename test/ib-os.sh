@@ -96,4 +96,8 @@ test-ib-os-append() {
 line 2"
   ib-os-append -q "$TEST_FILE" "$TEST_LINE"
   ib-assert-eq "$(<$TEST_FILE)" "$TEST_LINE"
+
+  # make sure that it doesn't add it again
+  ib-os-append -q "$TEST_FILE" "$TEST_LINE"
+  ib-assert-eq "$(<$TEST_FILE)" "$TEST_LINE"
 }
