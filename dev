@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+
+# Bash script to run developer commands.
+
+# Use "strict mode" in bash to help debug your scripts.
+set -uo pipefail
+IFS=$'\n\t'
+
+# Find the location of this script.
+SCRIPT_PATH=$(readlink -f ${BASH_SOURCE[0]})
+SCRIPT_DIR=$(dirname $SCRIPT_PATH)
+
+#### END OF STANDARD DEV HEADER ####
+
+FILE_DIST="$SCRIPT_DIR/dist/idempotent-bash.sh"
+
+dev_all() {  # clean, test, and build
+  dev_clean
+  dev_test
+  dev_build
+}
+
+dev_clean() {  # remove generated files
+  echo '==> clean'
+  rm -rf "$FILE_DIST"
+}
+
+dev_test() {  # run tests
+  echo '==> test'
+  bash "test/run.sh"
+}
+
+dev_build() {
+  echo '==> build'
+  rm -f "$FILE_DIST"
+  cat src/*.sh >> "$FILE_DIST"
+  chmod +x "$FILE_DIST"
+}
+
+
+#### START OF STANDARD DEV FOOTER ####
+
+dev_help() { # list possible actions and exit
+  local regex='^dev[_-]([^(]*)\(\) *\{( *# *)?(.*)'
+  printf "usage: ./$(basename "$SCRIPT_PATH") ACTION [ACTION...] \n"
+  printf "\nPossible actions:\n"
+  for fn in $(grep -oP $regex $SCRIPT_PATH); do
+    if [[ $fn =~ $regex ]]; then
+      printf "  ${BASH_REMATCH[1]} - ${BASH_REMATCH[3]}\n";
+    fi
+  done
+}
+
+main() {
+  local arg=${1:-''}
+  if [[ "$arg" == "" ]]; then dev_all; exit; fi
+  if [[ "$arg" =~ ^(-h|--help)$ ]]; then dev_help; exit; fi
+  while [[ "$#" > 0 ]]; do dev_$1; shift 1; done
+}
+
+main $@
