@@ -116,7 +116,7 @@ ib-apt-install() {
   readarray -t packages <<< "$packages"
   for item in "${packages[@]}"; do
     skip=$(ib-ok? dpkg -s $item 2>> /dev/null \| grep -sPe $regex_installed)
-    if [[ !"$updated" && !"$skip" ]]; then
+    if ! [[ "$updated" || "$skip" ]]; then
       ib-apt-update -u "$user" $quiet "$IB_APT_CACHE_MAX"
       updated=true
     fi
