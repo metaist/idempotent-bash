@@ -7,8 +7,15 @@ The format is based on [Keep a Changelog] and this project adheres to [Semantic 
 [Semantic Versioning]: http://semver.org/spec/v2.0.0.html
 
 ---
+[#39]: https://github.com/metaist/idempotent-bash/issues/39
+[#40]: https://github.com/metaist/idempotent-bash/issues/40
 [Unreleased]: https://github.com/metaist/idempotent-bash/compare/1.1.3...HEAD
 ## [Unreleased]
+**Changed**
+- [#40]: replaced `build.sh` with `dev`
+
+**Fixed**
+- [#39]: `ib-apt-update` only called when `ib-apt-install` actually needs it
 
 ---
 [#32]: https://github.com/metaist/idempotent-bash/issues/32

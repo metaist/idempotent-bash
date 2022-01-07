@@ -13,8 +13,8 @@ IB_POSTGRESQL_USER='postgres'
 ib-postgresql-ok?() {
   if ! ib-command? psql; then return 1; fi
 
-  local sql=${1:-"SELECT 1;"}
-  local status=$(sudo -u $IB_POSTGRESQL_USER psql -c "$sql" 2>&1)
+  local sql=${1:-";"}
+  local status=$(sudo -u $IB_POSTGRESQL_USER psql -AtXqc "$sql" 2>&1)
   ib-ok? grep -qPe \"\([^0]\d* rows?\)\" <<< "$status"
 }
 

@@ -204,7 +204,7 @@ ib-action() {
 
   while [[ "$#" > 0 ]]; do
     case ${1:-""} in
-      -h|--help) echo $IB_USAGE; exit; break;;
+      -h|--help) echo "$IB_USAGE"; exit; break;;
       --version)
         echo "$(basename ${IB_SCRIPT_NAME%.*}) v$IB_SCRIPT_VERSION"
         exit 0
