@@ -26,6 +26,6 @@ test-ib-apt-install() {
 
   ib-apt-install -q python ruby
 
-  dpkg -s python | grep -qPe installed
+  dpkg -s python3 | grep -qPe installed
   ib-assert-true  [[ "$?" == "0" ]]
 }
